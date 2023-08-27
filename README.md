@@ -21,7 +21,7 @@ Include the overall steps and tools used in this assignment.
 
 ```bash
 # CHANGE-TO-YOURNAME-aws-node-http-api-project to your repo name! in line 2, service.
-service: Assignment3-13
+service: Assignment3-15
 frameworkVersion: '3'
 
 provider:
@@ -46,7 +46,7 @@ plugins:
 ### index.js
 ```bash
 # CHANGE-TO-YOURNAME-aws-node-http-api-project to your repo name! in line 2, service.
-service: Assignment3-13
+service: Assignment3-15
 frameworkVersion: '3'
 
 provider:
@@ -94,18 +94,18 @@ describe('Lambda Handler', () => {
 
 ### .github/workflows/main.yml
 ```bash
-name: CICD for Serverless Application-title of action
-run-name: ${{github.actor}} is doing CICD for serverless application
+name: CICD for Serverless Application
+run-name: ${{ github.actor }} is doing CICD for serverless application
 
-on: 
+on:
   push:
-    branches: [ main, "*"]
+    branches: [ main, "*" ]
 
 jobs:
   pre-deploy:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "The job is automatically triggered by a ${{ github.event.name }} event."
+      - run: echo "The job is automatically triggered by a ${{ github.event_name }} event."
 
   install-dependencies:
     runs-on: ubuntu-latest
@@ -126,26 +126,35 @@ jobs:
         run: npm install
       - name: Run unit testing command
         run: npm test
-        
-  deploy:
-    name: deploy
+  
+  package-scan:
     runs-on: ubuntu-latest
     needs: unit-testing
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - name: use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - name: serverless deploy
-        uses: serverless/github-action@v3.2
-        with:
-          args: deploy
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Run installation of dependencies commands
+        run: npm install
+      - name: Run audit
+        run: npm audit
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: package-scan
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+    - name: serverless deploy
+      uses: serverless/github-action@v3.2
+      with:
+        args: deploy
+      env:
+        AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             
 ```
 ### Command and Steps to Run in Visual Studio Code under terminal
