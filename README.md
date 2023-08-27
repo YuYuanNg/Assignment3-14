@@ -172,3 +172,6 @@ jobs:
 - Add in pre-deploy, install dependencies, unit testing, audit check and deploy into main.yml
 - Add in ASCCES_KEY and parameter in index.js and serverless.yml
 - Carry out Github Action and Run the workflow.
+
+Unit testing thourgh commmand "npm run test" is passed. 
+![Alt text](image.png)
